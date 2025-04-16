@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ joint_type.name }}</h1>
+    <div>
+        <a href="{% url 'admin:core_jointtype_change' joint_type.id %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'joint-types' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ joint_type.description }}</p>
+                <div class="text-muted">
+                    <small>Created: {{ joint_type.created_at|date }}</small><br>
+                    <small>Last Updated: {{ joint_type.updated_at|date }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Statistics</h5>
+                <ul class="list-unstyled">
+                    <li>Total Sessions: {{ sessions|length }}</li>
+                    <li>Completed Sessions: {{ sessions|filter_completed|length }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Calibration Sessions</h5>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Operator</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session.date_time|date }}</td>
+                        <td>{{ session.operator.username }}</td>
+                        <td>
+                            {% if session.is_completed %}
+                            <span class="badge bg-success">Completed</span>
+                            {% else %}
+                            <span class="badge bg-warning">In Progress</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'session-detail' session.id %}" class="btn btn-sm btn-primary">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No sessions found for this joint type.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Predict Weld Quality{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Predict Weld Quality</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="image">Upload Weld Image</label>
+                            <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
+                            <small class="form-text text-muted">
+                                Supported formats: JPG, PNG. Maximum size: 5MB.
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Analyze Weld
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

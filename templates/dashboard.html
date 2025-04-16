@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Calibration Management System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">System Dashboard</h2>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100" style="max-height: 120px;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title mb-0">Total Sessions</h6>
+                    <h3 class="mb-0">{{ total_sessions }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100" style="max-height: 120px;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title mb-0">Total Models</h6>
+                    <h3 class="mb-0">{{ total_models }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100" style="max-height: 120px;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title mb-0">Data Points</h6>
+                    <h3 class="mb-0">{{ total_data_points }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white h-100" style="max-height: 120px;">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h6 class="card-title mb-0">Active Sessions</h6>
+                    <h3 class="mb-0">{{ active_sessions }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card" style="height: 300px;">
+                <div class="card-body">
+                    <h6 class="card-title">System Components Distribution</h6>
+                    <div style="height: 250px;">
+                        <canvas id="statsDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" style="height: 300px;">
+                <div class="card-body">
+                    <h6 class="card-title">Data Distribution</h6>
+                    <div id="dataHistogram" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card" style="height: 300px;">
+                <div class="card-body">
+                    <h6 class="card-title">Model Performance</h6>
+                    <div style="height: 250px;">
+                        <canvas id="modelPerformanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" style="height: 300px;">
+                <div class="card-body">
+                    <h6 class="card-title">Recent Activity</h6>
+                    <div class="table-responsive" style="height: 250px; overflow-y: auto;">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%">Date</th>
+                                    <th style="width: 20%">Activity</th>
+                                    <th style="width: 50%">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in recent_activities %}
+                                <tr>
+                                    <td>{{ activity.date }}</td>
+                                    <td>{{ activity.type }}</td>
+                                    <td>{{ activity.details }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="text-center text-muted">
+                <hr>
+                <p class="mb-3">Made with ❤️ by Khushi Arya</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // System Statistics Distribution Pie Chart
+    const statsCtx = document.getElementById('statsDistributionChart').getContext('2d');
+    const statsChart = new Chart(statsCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Sessions', 'Models', 'Data Points'],
+            datasets: [{
+                data: [{{ total_sessions }}, {{ total_models }}, {{ total_data_points }}],
+                backgroundColor: ['#2ecc71', '#3498db', '#e74c3c']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12
+                    }
+                }
+            }
+        }
+    });
+
+    // Create a histogram using Plotly
+    const histogramData = [{
+        x: ['Sessions', 'Models', 'Data Points'],
+        y: [{{ total_sessions }}, {{ total_models }}, {{ total_data_points }}],
+        type: 'bar',
+        marker: {
+            color: ['#2ecc71', '#3498db', '#e74c3c']
+        }
+    }];
+
+    const histogramLayout = {
+        xaxis: { title: 'Category' },
+        yaxis: { title: 'Count' },
+        margin: { t: 10, r: 10, b: 50, l: 50 },
+        bargap: 0.05,
+        height: 250
+    };
+
+    Plotly.newPlot('dataHistogram', histogramData, histogramLayout, {responsive: true});
+
+    // Model Performance Chart
+    const performanceCtx = document.getElementById('modelPerformanceChart').getContext('2d');
+    const performanceChart = new Chart(performanceCtx, {
+        type: 'line',
+        data: {
+            labels: {{ model_dates|safe }},
+            datasets: [{
+                label: 'Accuracy',
+                data: {{ model_accuracies|safe }},
+                borderColor: '#2ecc71',
+                fill: false
+            }, {
+                label: 'R² Score',
+                data: {{ model_r2_scores|safe }},
+                borderColor: '#3498db',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

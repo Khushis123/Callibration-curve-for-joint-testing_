@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Analysis Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Data Analysis Dashboard</h2>
+
+    <!-- Dataset Overview -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Dataset Overview</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Total Samples:</strong> {{ total_samples }}</p>
+                    <h5>Missing Values:</h5>
+                    <ul>
+                        {% for field, count in missing_values.items %}
+                        <li>{{ field }}: {{ count }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Basic Statistics:</h5>
+                    {{ basic_stats|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Performance -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Kernel Ridge Regression Model Performance</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5>MSE</h5>
+                            <p class="mb-0">{{ mse|floatformat:4 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5>RMSE</h5>
+                            <p class="mb-0">{{ rmse|floatformat:4 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5>R² Score</h5>
+                            <p class="mb-0">{{ r2_score|floatformat:4 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5>MAE</h5>
+                            <p class="mb-0">{{ mae|floatformat:4 }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visualizations -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Data Visualizations</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Temperature Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="data:image/png;base64,{{ temp_dist_img }}" class="img-fluid" alt="Temperature Distribution">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Temperature by Hour</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="data:image/png;base64,{{ temp_hour_img }}" class="img-fluid" alt="Temperature by Hour">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Actual vs Predicted</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="data:image/png;base64,{{ pred_img }}" class="img-fluid" alt="Actual vs Predicted">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Residuals Plot</h5>
+                        </div>
+                        <div class="card-body">
+                            <img src="data:image/png;base64,{{ residuals_img }}" class="img-fluid" alt="Residuals Plot">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

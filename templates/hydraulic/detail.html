@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Hydraulic System Data Details</h1>
+    <a href="{% url 'hydraulic_data_list' %}" class="btn btn-secondary">Back to List</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="card-title">System Status</h5>
+                <table class="table">
+                    <tr>
+                        <th>Timestamp:</th>
+                        <td>{{ entry.timestamp|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                    <tr>
+                        <th>System Stability:</th>
+                        <td>
+                            {% if entry.is_stable %}
+                            <span class="badge bg-success">Stable</span>
+                            {% else %}
+                            <span class="badge bg-warning">Unstable</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Cooler Condition:</th>
+                        <td>{{ entry.cooler_condition }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Valve Condition:</th>
+                        <td>{{ entry.valve_condition }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Pump Leakage:</th>
+                        <td>
+                            {% if entry.pump_leakage == 0 %}
+                            <span class="badge bg-success">No Leakage</span>
+                            {% elif entry.pump_leakage == 1 %}
+                            <span class="badge bg-warning">Weak Leakage</span>
+                            {% else %}
+                            <span class="badge bg-danger">Severe Leakage</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Accumulator Pressure:</th>
+                        <td>{{ entry.accumulator_pressure }} bar</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h5 class="card-title">Performance Metrics</h5>
+                <table class="table">
+                    <tr>
+                        <th>Motor Power:</th>
+                        <td>{{ entry.motor_power }} kW</td>
+                    </tr>
+                    <tr>
+                        <th>Volume Flow:</th>
+                        <td>{{ entry.volume_flow }} L/min</td>
+                    </tr>
+                    <tr>
+                        <th>Temperature:</th>
+                        <td>{{ entry.temperature }}°C</td>
+                    </tr>
+                    <tr>
+                        <th>Vibration:</th>
+                        <td>{{ entry.vibration }} mm/s</td>
+                    </tr>
+                    <tr>
+                        <th>System Efficiency:</th>
+                        <td>{{ entry.efficiency }}%</td>
+                    </tr>
+                    <tr>
+                        <th>Cooling Efficiency:</th>
+                        <td>{{ entry.cooling_efficiency }}%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

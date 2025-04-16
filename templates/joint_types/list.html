@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Joint Types</h1>
+    <a href="{% url 'joint_type_create' %}" class="btn btn-primary">Add New Joint Type</a>
+</div>
+
+<div class="row">
+    {% for joint_type in joint_types %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ joint_type.name }}</h5>
+                <p class="card-text">{{ joint_type.description|truncatewords:30 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'joint_type_detail' joint_type.id %}" class="btn btn-info btn-sm">View Details</a>
+                    <div>
+                        <a href="{% url 'joint_type_update' joint_type.id %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'joint_type_delete' joint_type.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No joint types found. <a href="{% url 'joint_type_create' %}">Add your first joint type</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 

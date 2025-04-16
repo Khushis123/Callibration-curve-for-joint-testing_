@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Hydraulic System Data</h1>
+    <a href="{% url 'import_hydraulic_data' %}" class="btn btn-primary">Import Data</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Cooler Condition</th>
+                        <th>Valve Condition</th>
+                        <th>Pump Leakage</th>
+                        <th>Accumulator Pressure</th>
+                        <th>Stable</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in data %}
+                    <tr>
+                        <td>{{ entry.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ entry.cooler_condition }}%</td>
+                        <td>{{ entry.valve_condition }}%</td>
+                        <td>
+                            {% if entry.pump_leakage == 0 %}
+                            <span class="badge bg-success">No Leakage</span>
+                            {% elif entry.pump_leakage == 1 %}
+                            <span class="badge bg-warning">Weak Leakage</span>
+                            {% else %}
+                            <span class="badge bg-danger">Severe Leakage</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ entry.accumulator_pressure }} bar</td>
+                        <td>
+                            {% if entry.is_stable %}
+                            <span class="badge bg-success">Stable</span>
+                            {% else %}
+                            <span class="badge bg-warning">Unstable</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'hydraulic_data_detail' entry.id %}" class="btn btn-sm btn-primary">View</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">No hydraulic system data found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

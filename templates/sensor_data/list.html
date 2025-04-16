@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Sensor Data</h1>
+    <a href="{% url 'sensor_data_create' %}" class="btn btn-primary">Add New Sensor Data</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Filter Data</h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="session" class="form-label">Session</label>
+                <select name="session" id="session" class="form-select">
+                    <option value="">All Sessions</option>
+                    {% for session in sessions %}
+                    <option value="{{ session.id }}" {% if selected_session == session.id %}selected{% endif %}>
+                        {{ session.joint_type.name }} - {{ session.date_time|date }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="material_type" class="form-label">Material Type</label>
+                <select name="material_type" id="material_type" class="form-select">
+                    <option value="">All Materials</option>
+                    {% for material in material_types %}
+                    <option value="{{ material }}" {% if selected_material == material %}selected{% endif %}>
+                        {{ material }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th>Applied Load</th>
+                        <th>Sensor Voltage</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>Machine Speed</th>
+                        <th>Material Type</th>
+                        <th>True Output</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in data %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'session_detail' data.session.id %}">
+                                {{ data.session.joint_type.name }} - {{ data.session.date_time|date }}
+                            </a>
+                        </td>
+                        <td>{{ data.applied_load }}</td>
+                        <td>{{ data.sensor_voltage }}</td>
+                        <td>{{ data.temperature }}</td>
+                        <td>{{ data.humidity }}</td>
+                        <td>{{ data.machine_speed }}</td>
+                        <td>{{ data.material_type }}</td>
+                        <td>{{ data.true_output }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'sensor_data_update' data.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center">No sensor data found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

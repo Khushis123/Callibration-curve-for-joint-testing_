@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ model.name }}</h1>
+    <div>
+        <a href="{% url 'model_update' model.id %}" class="btn btn-warning">Edit Model</a>
+        <a href="{% url 'model_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Model Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">Model Type</dt>
+                    <dd class="col-sm-8">{{ model.get_model_type_display }}</dd>
+                    
+                    <dt class="col-sm-4">Session</dt>
+                    <dd class="col-sm-8">
+                        <a href="{% url 'session_detail' model.session.id %}">
+                            {{ model.session.joint_type.name }} - {{ model.session.date_time|date }}
+                        </a>
+                    </dd>
+                    
+                    <dt class="col-sm-4">Training Date</dt>
+                    <dd class="col-sm-8">{{ model.training_date|date }}</dd>
+                    
+                    <dt class="col-sm-4">Model File</dt>
+                    <dd class="col-sm-8">
+                        <a href="{{ model.model_file.url }}" class="btn btn-sm btn-info">Download</a>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Performance Metrics</h5>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h6>Accuracy</h6>
+                            <h3>{{ model.accuracy|floatformat:2 }}%</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h6>R² Score</h6>
+                            <h3>{{ model.r2_score|floatformat:4 }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <h6>MAE</h6>
+                            <h3>{{ model.mae|floatformat:4 }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Make Predictions</h5>
+                <form id="predictionForm" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="sensorVoltage" class="form-label">Sensor Voltage</label>
+                            <input type="number" step="0.01" class="form-control" id="sensorVoltage" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="temperature" class="form-label">Temperature</label>
+                            <input type="number" step="0.1" class="form-control" id="temperature" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="humidity" class="form-label">Humidity</label>
+                            <input type="number" step="0.1" class="form-control" id="humidity" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="machineSpeed" class="form-label">Machine Speed</label>
+                            <input type="number" step="0.1" class="form-control" id="machineSpeed" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="materialType" class="form-label">Material Type</label>
+                            <input type="text" class="form-control" id="materialType" required>
+                        </div>
+                        <div class="col-md-9 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Predict</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div id="predictionResult" class="alert alert-info d-none">
+                    <h6>Prediction Result:</h6>
+                    <p id="predictionValue"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const inputData = [
+            parseFloat(document.getElementById('sensorVoltage').value),
+            parseFloat(document.getElementById('temperature').value),
+            parseFloat(document.getElementById('humidity').value),
+            parseFloat(document.getElementById('machineSpeed').value)
+        ];
+        
+        fetch(`/api/models/{{ model.id }}/predict/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                input_data: [inputData]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const resultDiv = document.getElementById('predictionResult');
+            const valueDiv = document.getElementById('predictionValue');
+            
+            if (data.predictions && data.predictions.length > 0) {
+                valueDiv.textContent = `Predicted Output: ${data.predictions[0].toFixed(4)}`;
+                resultDiv.classList.remove('d-none', 'alert-danger');
+                resultDiv.classList.add('alert-success');
+            } else {
+                valueDiv.textContent = 'Error: ' + (data.error || 'Unknown error occurred');
+                resultDiv.classList.remove('d-none', 'alert-success');
+                resultDiv.classList.add('alert-danger');
+            }
+        })
+        .catch(error => {
+            const resultDiv = document.getElementById('predictionResult');
+            const valueDiv = document.getElementById('predictionValue');
+            
+            valueDiv.textContent = 'Error: ' + error.message;
+            resultDiv.classList.remove('d-none', 'alert-success');
+            resultDiv.classList.add('alert-danger');
+        });
+    });
+    
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %} 

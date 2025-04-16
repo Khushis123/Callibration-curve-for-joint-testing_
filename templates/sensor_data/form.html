@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{% if data %}Edit{% else %}Create{% endif %} Sensor Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if data %}Edit{% else %}Create{% endif %} Sensor Data</h2>
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="session" class="form-label">Calibration Session</label>
+            <select name="session" id="session" class="form-select" required>
+                <option value="">Select a session</option>
+                {% for session in sessions %}
+                <option value="{{ session.id }}" {% if data and data.session.id == session.id %}selected{% endif %}>
+                    {{ session.joint_type.name }} - {{ session.date_time }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="applied_load" class="form-label">Applied Load</label>
+            <input type="number" step="0.01" class="form-control" id="applied_load" name="applied_load" 
+                   value="{{ data.applied_load|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="sensor_voltage" class="form-label">Sensor Voltage</label>
+            <input type="number" step="0.001" class="form-control" id="sensor_voltage" name="sensor_voltage" 
+                   value="{{ data.sensor_voltage|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="temperature" class="form-label">Temperature (°C)</label>
+            <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" 
+                   value="{{ data.temperature|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="humidity" class="form-label">Humidity (%)</label>
+            <input type="number" step="0.1" class="form-control" id="humidity" name="humidity" 
+                   value="{{ data.humidity|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="machine_speed" class="form-label">Machine Speed</label>
+            <input type="number" step="0.1" class="form-control" id="machine_speed" name="machine_speed" 
+                   value="{{ data.machine_speed|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="material_type" class="form-label">Material Type</label>
+            <input type="text" class="form-control" id="material_type" name="material_type" 
+                   value="{{ data.material_type|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="true_output" class="form-label">True Output</label>
+            <input type="number" step="0.01" class="form-control" id="true_output" name="true_output" 
+                   value="{{ data.true_output|default:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">{% if data %}Update{% else %}Create{% endif %}</button>
+            <a href="{% url 'sensor_data_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 

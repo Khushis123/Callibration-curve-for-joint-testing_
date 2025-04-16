@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if model %}Edit Model{% else %}Create New Model{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">{% if model %}Edit Model{% else %}Create New Model{% endif %}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="session" class="form-label">Calibration Session</label>
+                            <select name="session" id="session" class="form-select" required>
+                                <option value="">Select a session</option>
+                                {% for session in sessions %}
+                                    <option value="{{ session.id }}" {% if model and model.session.id == session.id %}selected{% endif %}>
+                                        {{ session.joint_type.name }} - {{ session.date_time|date:"Y-m-d H:i" }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="model_type" class="form-label">Model Type</label>
+                            <select name="model_type" id="model_type" class="form-select" required>
+                                <option value="">Select model type</option>
+                                <option value="linear" {% if model and model.model_type == 'linear' %}selected{% endif %}>Linear Regression</option>
+                                <option value="polynomial" {% if model and model.model_type == 'polynomial' %}selected{% endif %}>Polynomial Regression</option>
+                                <option value="random_forest" {% if model and model.model_type == 'random_forest' %}selected{% endif %}>Random Forest</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="model_file" class="form-label">Model File</label>
+                            <input type="file" class="form-control" id="model_file" name="model_file" {% if not model %}required{% endif %}>
+                            {% if model and model.model_file %}
+                                <small class="text-muted">Current file: {{ model.model_file.name }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="accuracy" class="form-label">Accuracy (%)</label>
+                            <input type="number" class="form-control" id="accuracy" name="accuracy" step="0.01" min="0" max="100" 
+                                value="{{ model.accuracy|default:'' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="r2_score" class="form-label">R² Score</label>
+                            <input type="number" class="form-control" id="r2_score" name="r2_score" step="0.0001" min="0" max="1" 
+                                value="{{ model.r2_score|default:'' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mae" class="form-label">Mean Absolute Error (MAE)</label>
+                            <input type="number" class="form-control" id="mae" name="mae" step="0.0001" min="0" 
+                                value="{{ model.mae|default:'' }}" required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if model %}Update Model{% else %}Create Model{% endif %}
+                            </button>
+                            <a href="{% url 'model_list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

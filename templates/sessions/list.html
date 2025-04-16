@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Calibration Sessions</h1>
+    <a href="{% url 'session_create' %}" class="btn btn-primary">Start New Session</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Joint Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Sensor Data Points</th>
+                        <th>Models</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session.joint_type.name }}</td>
+                        <td>{{ session.date_time|date }}</td>
+                        <td>
+                            {% if session.is_completed %}
+                            <span class="badge bg-success">Completed</span>
+                            {% else %}
+                            <span class="badge bg-warning">In Progress</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ session.sensor_data.count }}</td>
+                        <td>{{ session.models.count }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'session_detail' session.id %}" class="btn btn-sm btn-primary">View</a>
+                                <a href="{% url 'session_update' session.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No calibration sessions found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

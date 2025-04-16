@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Train Weld Quality Model{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Train Weld Quality Model</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="alert alert-info">
+                            <h4>Dataset Information</h4>
+                            <p>Using the weld quality inspection dataset with 6 classes:</p>
+                            <ul>
+                                <li>Bad Welding</li>
+                                <li>Crack</li>
+                                <li>Excess Reinforcement</li>
+                                <li>Good Welding</li>
+                                <li>Porosity</li>
+                                <li>Spatters</li>
+                            </ul>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-cogs"></i> Start Training
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

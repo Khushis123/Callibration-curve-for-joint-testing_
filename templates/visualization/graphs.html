@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Visualization{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Data Visualization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Sensor Data Distribution</h4>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="sensorDataChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Model Performance</h4>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="modelPerformanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Time Series Analysis</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="timeSeriesChart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sensor Data Distribution Chart
+    const sensorCtx = document.getElementById('sensorDataChart').getContext('2d');
+    new Chart(sensorCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Temperature', 'Humidity', 'Voltage', 'Speed'],
+            datasets: [{
+                label: 'Average Values',
+                data: [25, 60, 3.5, 1500],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Model Performance Chart
+    const modelCtx = document.getElementById('modelPerformanceChart').getContext('2d');
+    new Chart(modelCtx, {
+        type: 'line',
+        data: {
+            labels: ['Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5'],
+            datasets: [{
+                label: 'Accuracy',
+                data: [0.85, 0.88, 0.92, 0.89, 0.91],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1
+                }
+            }
+        }
+    });
+
+    // Time Series Chart
+    const timeSeriesData = {
+        x: ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'],
+        y: [25, 28, 24, 26, 27],
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Temperature'
+    };
+
+    const timeSeriesLayout = {
+        title: 'Temperature Over Time',
+        xaxis: {
+            title: 'Date'
+        },
+        yaxis: {
+            title: 'Temperature (°C)'
+        }
+    };
+
+    Plotly.newPlot('timeSeriesChart', [timeSeriesData], timeSeriesLayout);
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Calibration Models</h1>
+    <a href="{% url 'model_create' %}" class="btn btn-primary">Add New Model</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>Type</th>
+                        <th>Session</th>
+                        <th>Accuracy</th>
+                        <th>R² Score</th>
+                        <th>MAE</th>
+                        <th>Training Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                    <tr>
+                        <td>{{ model.name }}</td>
+                        <td>{{ model.get_model_type_display }}</td>
+                        <td>{{ model.session.joint_type.name }} - {{ model.session.date_time|date }}</td>
+                        <td>{{ model.accuracy|floatformat:2 }}%</td>
+                        <td>{{ model.r2_score|floatformat:4 }}</td>
+                        <td>{{ model.mae|floatformat:4 }}</td>
+                        <td>{{ model.training_date|date }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'model_detail' model.id %}" class="btn btn-sm btn-primary">View</a>
+                                <a href="{% url 'model_update' model.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">No calibration models found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

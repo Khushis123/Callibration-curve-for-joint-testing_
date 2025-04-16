@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Import Temperature Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Import Temperature Data</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        This will import temperature readings from the IOT-temp.csv dataset and create a new calibration session.
+                        The data will be processed in batches to handle the large dataset efficiently.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            The import process may take a few minutes depending on the size of the dataset.
+                            Please wait while the data is being processed.
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-import"></i> Import Data
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
